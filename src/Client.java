@@ -19,10 +19,24 @@ public class Client {
 
             while (true) {
                 String serverOutput = fromServer.readLine();
+
+                // This means we just got a code back from the server
+                if (serverOutput.length() == 1)
+                    handleCode(Integer.parseInt(serverOutput));
+
                 System.out.println(serverOutput);
             }
         } catch (IOException ioe) {
             System.err.println(ioe);
+        }
+    }
+
+    public static void handleCode(int code) {
+        if (code == 1) {
+            System.out.println("usename taken");
+        }
+        switch (code) {
+
         }
     }
 }

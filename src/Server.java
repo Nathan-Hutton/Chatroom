@@ -20,6 +20,9 @@ public class  Server
 {
 	public static final int DEFAULT_PORT = 5040;
     private static ConcurrentHashMap<String, PrintWriter> userMap = new ConcurrentHashMap<>();
+    
+    // This is because we're technically counting the server as a user
+    private static Socket serverUser = null;
 
     // construct a thread pool for concurrency	
 	private static final Executor exec = Executors.newCachedThreadPool();
@@ -31,6 +34,10 @@ public class  Server
 			// establish the socket
 			sock = new ServerSocket(DEFAULT_PORT);
 			System.out.println("Server is listening on port " + DEFAULT_PORT);
+
+            // Establish the "server" user
+            serverUser = new Socket("localHost", DEFAULT_PORT);
+            userMap.put("server", new PrintWriter(serverUser.getOutputStream(), true));
 
 			
 			while (true) {

@@ -42,10 +42,15 @@ public class Handler {
 
         // Request for making a new user
         if (commandHeader.equals("user")) {
-            userMap.put(commandBody, getClientPrintWriter());
-            for (PrintWriter toClient : userMap.values()) {
-                toClient.println(commandBody + " has joined the server");            
+            if (userMap.keySet().contains(commandBody)) {
+                getClientPrintWriter().println(1);
+                return;
             }
+
+            userMap.put(commandBody, getClientPrintWriter());
+            // We'll need to make this a broadcast message at some point
+            for (PrintWriter toClient : userMap.values())
+                toClient.println(commandBody + " has joined the server");            
         }
     }
 
