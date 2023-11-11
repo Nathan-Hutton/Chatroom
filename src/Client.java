@@ -15,7 +15,7 @@ public class Client {
         ) {
             System.out.print("Enter your username: ");
             String username = scanner.nextLine();
-            out.println(username); 
+            out.println("user<" + username + ">"); 
 
             String test = fromServer.readLine();
             System.out.println(test);

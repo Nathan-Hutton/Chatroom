@@ -13,19 +13,40 @@ import java.net.*;
 import java.util.concurrent.*;
 
 public class Handler {
+    private BufferedReader fromClient = null;
+    private PrintWriter toClient = null;
+
     public void process(Socket clientSocket, ConcurrentHashMap<String, Handler> userMap) throws IOException {
 
-        BufferedReader newClientReader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-        PrintWriter newClientWriter = new PrintWriter(clientSocket.getOutputStream(), true);
-        newClientWriter.println("Hello");
-        try {
+        //newClientWriter.println("Hello");
+        try  {
+            fromClient = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+            toClient = new PrintWriter(clientSocket.getOutputStream(), true);
             while (true) {
-                
+                String clientCommand = fromClient.readLine();
+                processCommand(clientCommand, userMap);
             }
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-
+            clientSocket.close();
         }
+    }
+
+    public void processCommand(String command, ConcurrentHashMap<String, Handler> userMap) {
+        String[] commandParts = command.split("<");
+        String commandHeader = commandParts[0];
+        String commandBody = commandParts[1].substring(0, commandParts[1].length() - 1);
+
+        // Request for making a new user
+        if (commandHeader.equals("user")) {
+            userMap.put(commandBody, this);
+            for (Handler client : userMap.values())
+                client.getClientPrintWriter().println(commandBody + " has joined the server");            
+        }
+    }
+
+    public PrintWriter getClientPrintWriter() {
+        return this.toClient;
     }
 }
