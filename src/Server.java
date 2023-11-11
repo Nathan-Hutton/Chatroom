@@ -35,8 +35,11 @@ public class  Server
 
 			
 			while (true) {
-                clients.add(new BufferedReader(new InputStreamReader(sock.accept().getInputStream())));
-                System.out.println("Here");
+                Socket clientSocket = sock.accept();
+                BufferedReader newClientReader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+                PrintWriter newClientWriter = new PrintWriter(clientSocket.getOutputStream(), true);
+                clients.add(newClientReader);
+                newClientWriter.println("Hello");
 				//Runnable task = new Connection(sock.accept());
 				//exec.execute(task);
 			}

@@ -13,9 +13,8 @@ public class Client
             PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
             BufferedReader fromServer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         ){
-            //out.println(args[1]);
-            //String ip = fromServer.readLine();
-            //System.out.println(ip);
+            String test = fromServer.readLine();
+            System.out.println(test);
         }
         catch (IOException ioe) {
             System.err.println(ioe);
