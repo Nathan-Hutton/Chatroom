@@ -10,15 +10,15 @@
 
 import java.io.*;
 import java.net.*;
+import java.util.concurrent.*;
 
 public class Handler {
-    BufferedReader fromClient = null;
-    PrintWriter out = null;
-    public void process(Socket clientSocket) throws IOException {
-        try {
-            fromClient = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-            out = new PrintWriter(clientSocket.getOutputStream(), true);
+    public void process(Socket clientSocket, ConcurrentHashMap<String, Handler> userMap) throws IOException {
 
+        BufferedReader newClientReader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+        PrintWriter newClientWriter = new PrintWriter(clientSocket.getOutputStream(), true);
+        newClientWriter.println("Hello");
+        try {
             while (true) {
                 
             }

@@ -19,7 +19,9 @@ import java.util.List;
 public class  Server
 {
 	public static final int DEFAULT_PORT = 5040;
-	private static List<BufferedReader> clients = new ArrayList<>();
+    private static ConcurrentHashMap<String, Handler> userMap = new ConcurrentHashMap<>();
+	//private static List<BufferedReader> clients = new ArrayList<>();
+    //private static List<String> usernames = new ArrayList<>();
 
 
     // construct a thread pool for concurrency	
@@ -35,19 +37,14 @@ public class  Server
 
 			
 			while (true) {
-                Socket clientSocket = sock.accept();
-                BufferedReader newClientReader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-                PrintWriter newClientWriter = new PrintWriter(clientSocket.getOutputStream(), true);
-                clients.add(newClientReader);
-                newClientWriter.println("Hello");
-				//Runnable task = new Connection(sock.accept());
-				//exec.execute(task);
+				Runnable task = new Connection(sock.accept(), userMap);
+				exec.execute(task);
 			}
 		}
 		catch (IOException ioe) { System.err.println(ioe); }
 		finally {
-            for (BufferedReader clientReader : clients)
-                clientReader.close();
+            //for (BufferedReader clientReader : clients)
+             //   clientReader.close();
 		}
 	}
 }

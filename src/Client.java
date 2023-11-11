@@ -13,7 +13,7 @@ public class Client {
             BufferedReader fromServer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
             Scanner scanner = new Scanner(System.in); 
         ) {
-            System.out.println("Enter your username: ");
+            System.out.print("Enter your username: ");
             String username = scanner.nextLine();
             out.println(username); 
 

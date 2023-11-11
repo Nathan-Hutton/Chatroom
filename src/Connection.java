@@ -7,14 +7,17 @@
 
 import java.net.*;
 import java.io.*;
+import java.util.concurrent.*;
 
 public class Connection implements Runnable
 {
 	private Socket	client;
 	private static Handler handler = new Handler();
+    private static ConcurrentHashMap<String, Handler> userMap;
 	
-	public Connection(Socket client) {
-		this.client = client;
+	public Connection(Socket clientSocket, ConcurrentHashMap<String, Handler> userMap) {
+        this.client = clientSocket;
+        this.userMap = userMap;
 	}
 
     /**
@@ -22,7 +25,7 @@ public class Connection implements Runnable
      */	
 	public void run() { 
 		try {
-			handler.process(client);
+			handler.process(client, userMap);
 		}
 		catch (java.io.IOException ioe) {
 			System.err.println(ioe);
