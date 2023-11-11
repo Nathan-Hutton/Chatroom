@@ -17,8 +17,10 @@ public class Client {
             String username = scanner.nextLine();
             out.println("user<" + username + ">"); 
 
-            String test = fromServer.readLine();
-            System.out.println(test);
+            while (true) {
+                String serverOutput = fromServer.readLine();
+                System.out.println(serverOutput);
+            }
         } catch (IOException ioe) {
             System.err.println(ioe);
         }

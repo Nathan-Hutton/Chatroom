@@ -19,10 +19,7 @@ import java.util.List;
 public class  Server
 {
 	public static final int DEFAULT_PORT = 5040;
-    private static ConcurrentHashMap<String, Handler> userMap = new ConcurrentHashMap<>();
-	//private static List<BufferedReader> clients = new ArrayList<>();
-    //private static List<String> usernames = new ArrayList<>();
-
+    private static ConcurrentHashMap<String, PrintWriter> userMap = new ConcurrentHashMap<>();
 
     // construct a thread pool for concurrency	
 	private static final Executor exec = Executors.newCachedThreadPool();

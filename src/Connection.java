@@ -13,9 +13,9 @@ public class Connection implements Runnable
 {
 	private Socket	client;
 	private static Handler handler = new Handler();
-    private static ConcurrentHashMap<String, Handler> userMap;
+    private static ConcurrentHashMap<String, PrintWriter> userMap;
 	
-	public Connection(Socket clientSocket, ConcurrentHashMap<String, Handler> userMap) {
+	public Connection(Socket clientSocket, ConcurrentHashMap<String, PrintWriter> userMap) {
         this.client = clientSocket;
         this.userMap = userMap;
 	}

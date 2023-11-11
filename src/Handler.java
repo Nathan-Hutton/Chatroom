@@ -16,7 +16,7 @@ public class Handler {
     private BufferedReader fromClient = null;
     private PrintWriter toClient = null;
 
-    public void process(Socket clientSocket, ConcurrentHashMap<String, Handler> userMap) throws IOException {
+    public void process(Socket clientSocket, ConcurrentHashMap<String, PrintWriter> userMap) throws IOException {
 
         //newClientWriter.println("Hello");
         try  {
@@ -30,19 +30,22 @@ public class Handler {
             e.printStackTrace();
         } finally {
             clientSocket.close();
+            fromClient.close();
+            toClient.close();
         }
     }
 
-    public void processCommand(String command, ConcurrentHashMap<String, Handler> userMap) {
+    public void processCommand(String command, ConcurrentHashMap<String, PrintWriter> userMap) {
         String[] commandParts = command.split("<");
         String commandHeader = commandParts[0];
         String commandBody = commandParts[1].substring(0, commandParts[1].length() - 1);
 
         // Request for making a new user
         if (commandHeader.equals("user")) {
-            userMap.put(commandBody, this);
-            for (Handler client : userMap.values())
-                client.getClientPrintWriter().println(commandBody + " has joined the server");            
+            userMap.put(commandBody, getClientPrintWriter());
+            for (PrintWriter toClient : userMap.values()) {
+                toClient.println(commandBody + " has joined the server");            
+            }
         }
     }
 
