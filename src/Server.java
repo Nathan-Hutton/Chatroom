@@ -13,10 +13,14 @@
 import java.net.*;
 import java.io.*;
 import java.util.concurrent.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class  Server
 {
-	public static final int DEFAULT_PORT = 8080;
+	public static final int DEFAULT_PORT = 5040;
+	private static List<PrintWriter> clientWriters = new ArrayList<>();
+
 
     // construct a thread pool for concurrency	
 	private static final Executor exec = Executors.newCachedThreadPool();
