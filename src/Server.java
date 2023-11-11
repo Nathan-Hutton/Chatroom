@@ -19,15 +19,15 @@ import java.util.List;
 public class  Server
 {
 	public static final int DEFAULT_PORT = 5040;
-	private static List<PrintWriter> clientWriters = new ArrayList<>();
+	private static List<BufferedReader> clients = new ArrayList<>();
 
 
     // construct a thread pool for concurrency	
 	private static final Executor exec = Executors.newCachedThreadPool();
 	
 	public static void main(String[] args) throws IOException {
-		ServerSocket sock = null;
 		
+        ServerSocket sock = null;
 		try {
 			// establish the socket
 			sock = new ServerSocket(DEFAULT_PORT);
@@ -35,19 +35,16 @@ public class  Server
 
 			
 			while (true) {
-				/**
-				 * now listen for connections
-				 * and service the connection in a separate thread.
-				 */
-				 
-				Runnable task = new Connection(sock.accept());
-				exec.execute(task);
+                clients.add(new BufferedReader(new InputStreamReader(sock.accept().getInputStream())));
+                System.out.println("Here");
+				//Runnable task = new Connection(sock.accept());
+				//exec.execute(task);
 			}
 		}
 		catch (IOException ioe) { System.err.println(ioe); }
 		finally {
-			if (sock != null)
-				sock.close();
+            for (BufferedReader clientReader : clients)
+                clientReader.close();
 		}
 	}
 }
