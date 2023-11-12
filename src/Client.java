@@ -1,3 +1,4 @@
+
 import java.io.*;
 import java.net.*;
 import java.util.Scanner; 
@@ -21,12 +22,29 @@ public class Client {
             Scanner scanner = new Scanner(System.in); 
         ) {
             // Setup username
-            System.out.print("Enter your username: ");
-            userInput = scanner.nextLine();
-            client.setUsername(userInput);
-            toServer.println("user<" + userInput + ">"); 
+            while (true) {
+                System.out.print("Enter your username: ");
+                userInput = scanner.nextLine();
+                client.setUsername(userInput);
+                toServer.println("user<" + userInput + ">"); 
+                serverOutput = fromServer.readLine();
+                int returnCode = handleUsernameServerCode(Integer.parseInt(serverOutput));
 
+                if (returnCode == 1)
+                    break;
+            }
+
+            // Handle chatting phase
             while (clientSocket.isConnected()) {
+                System.out.print("> ");
+                userInput = scanner.nextLine();
+                command = parseUserInput(userInput, client.getUsername());
+
+                // Means that we have some invalid input
+                if (command.equals("-1"))
+                    continue;
+
+                toServer.println(command);
                 serverOutput = fromServer.readLine();
                 System.out.println(serverOutput);
 
@@ -38,7 +56,7 @@ public class Client {
                 // TODO: Add colored text
                 // This means we just got a code back from the server
                 if (serverOutput.length() == 1)
-                    handleServerCode(Integer.parseInt(serverOutput), toServer, scanner, client);
+                    handleServerCode(Integer.parseInt(serverOutput), client);
             }
 
             System.out.println("You've left the server");
@@ -47,67 +65,39 @@ public class Client {
         }
     }
 
-    // Handle a code sent from the server (1 through 9)
-    public static void handleServerCode(int code, PrintWriter toServer, Scanner scanner, Client client) {
-        String userInput;
-        String command;
-
+    // Handle codes sent from server for username requests (1-4)
+    public static int handleUsernameServerCode(int code) {
         switch (code) {
             case 1:
-                client.setUsername("");
                 System.out.println("Username taken");
-                System.out.print("Enter a different username: ");
-                userInput = scanner.nextLine();
-                client.setUsername(userInput);
-                command = "user<" + userInput + ">";
-                toServer.println(command);
-                return;
+                return -1;
             case 2:
-                client.setUsername("");
                 System.out.println("Protected character used");
-                System.out.print("Enter a different username: ");
-                userInput = scanner.nextLine();
-                client.setUsername(userInput);
-                command = "user<" + userInput + ">";
-                toServer.println(command);
-                return;
+                return -1;
             case 3:
-                client.setUsername("");
                 System.out.println("Length of the username is invalid");
-                System.out.print("Enter a different username: ");
-                userInput = scanner.nextLine();
-                client.setUsername(userInput);
-                command = "user<" + userInput + ">";
-                toServer.println(command);
-                return;
+                return -1;
             case 4:
-                // TODO: make this text green and clean this up
                 String BRIGHT_GREEN = "\u001B[92m";
                 String BOLD = "\u001B[1m";
                 String RESET = "\u001B[0m";
                 System.out.println(BRIGHT_GREEN + BOLD + "Success" + RESET);
-                //System.out.println("You can send broadcast messages with this format: '(broadcast)Hey everyone'");
-                //System.out.println("You can send private messages with this format: '(private recipient_username)Hey everyone'");
-                //System.out.println("Use 'ls' to get a list of users");
-                //System.out.println("Use 'exit' to leave");
-                System.out.print("> ");
-                userInput = scanner.nextLine();
-                command = parseUserInput(userInput, scanner, client);
-                toServer.println(command);
-                return;
+                return 1;
+        }
+        return -1;
+    }
+    
+    // Handle a code sent from the server (5-9)
+    public static void handleServerCode(int code, Client client) {
+        String userInput;
+        String command;
+
+        switch (code) {
             case 5:
                 System.out.println("Invalid message length");
-                System.out.print("> ");
-                userInput = scanner.nextLine();
-                command = parseUserInput(userInput, scanner, client);
-                toServer.println(command);
                 return;
             case 6:
                 System.out.println("Reserved character used");
-                System.out.print("> ");
-                userInput = scanner.nextLine();
-                command = parseUserInput(userInput, scanner, client);
-                toServer.println(command);
                 return;
             case 7:
                 return;
@@ -115,35 +105,30 @@ public class Client {
                 return;
             case 9:
                 System.out.println("User not found");
-                System.out.print("> ");
-                userInput = scanner.nextLine();
-                command = parseUserInput(userInput, scanner, client);
-                toServer.println(command);
                 return;
         }
     }
 
-    public static String parseUserInput(String userInput, Scanner scanner, Client client) {
+    public static String parseUserInput(String userInput, String username) {
+        if (userInput.length() == 0)
+            return "-1";
+
         userInput = userInput.stripTrailing();
         if (userInput.equals("exit"))
-            return "exit<" + client.getUsername() + ">";
+            return "exit<" + username + ">";
         if (userInput.equals("ls"))
-            return "<ls>";
+            return "ls<" + username + ">";
 
         // Check if there aren't parenthesis
         if (userInput.charAt(0) != '(' || !userInput.contains(")")) {
             System.out.println("Invalid request, message must contain parenthesis");
-            System.out.print("> ");
-            userInput = scanner.nextLine();
-            return parseUserInput(userInput, scanner, client);
+            return "-1";
         }
 
         // User probably just has 2 parenthesis with nothing in them
         if (userInput.length() <= 2) {
             System.out.println("Invalid command");
-            System.out.print("> ");
-            userInput = scanner.nextLine();
-            return parseUserInput(userInput, scanner, client);
+            return "-1";
         }
 
         // Check that what's in parenthesis is 'broadcast' or 'private'
@@ -151,9 +136,7 @@ public class Client {
         String betweenParenthesis = userInput.substring(1, userInput.indexOf(")"));
         if (!(betweenParenthesis.equals("broadcast") || (betweenParenthesis.substring(0, 7).equals("private") && betweenParenthesis.length() > 7))) {
             System.out.println("Invalid: '" + betweenParenthesis + "'");
-            System.out.print("> ");
-            userInput = scanner.nextLine();
-            return parseUserInput(userInput, scanner, client);
+            return "-1";
         }
 
         // Handle private messages
@@ -164,7 +147,7 @@ public class Client {
             String recipient = betweenParenthesis.substring(7);
             String message = userInput.split("\\)", 2)[1];
 
-            String command = "<private>("+client.getUsername()+","+recipient+","+formattedTime+","+message+")";
+            String command = "<private>("+username+","+recipient+","+formattedTime+","+message+")";
             return command;
         }
 
@@ -175,13 +158,11 @@ public class Client {
             String formattedTime = time.format(formatter);
             String message = userInput.split("\\)", 2)[1];
 
-            String command = "<broadcast>("+client.getUsername()+","+formattedTime+","+message+")";
+            String command = "<broadcast>("+username+","+formattedTime+","+message+")";
             return command;
         }
 
-        return "";
-
-
+        return "-1";
     }
 
     public void setUsername(String username){

@@ -27,8 +27,10 @@ public class Handler {
             fromClient = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
             toClient = new PrintWriter(clientSocket.getOutputStream(), true);
             String clientCommand;
+
             while (true) {
                 clientCommand = fromClient.readLine();
+                System.out.println(clientCommand);
 
                 // Likely means that the user left without an exit command
                 if (clientCommand == null)
@@ -51,6 +53,8 @@ public class Handler {
                 fromClient.close();
             if (toClient != null)
                 toClient.close();
+            if (userMap.keySet().contains(username))
+                userMap.remove(username);
             if (username != null) {
                 for (PrintWriter userWriter : userMap.values())
                     userWriter.println(username + " has left the server");
@@ -104,10 +108,10 @@ public class Handler {
         username = commandBody;
 
         // We'll need to make this a broadcast message at some point
+        getClientPrintWriter().println(4);
         for (PrintWriter toClient : userMap.values())
             toClient.println(commandBody + " has joined the server");            
 
-        getClientPrintWriter().println(4);
         return 1;
     }
 
