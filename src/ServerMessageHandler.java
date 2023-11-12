@@ -14,9 +14,15 @@ class RunnableMessageHandler implements Runnable {
         try {
             while (true) {
                 serverOutput = fromServer.readLine();
+
                 if (serverOutput == null)
                     break;
+
                 System.out.println(serverOutput);
+
+                // This means the server sent back a code
+                if (serverOutput.length() == 1)
+                    Client.handleServerCode(Integer.parseInt(serverOutput));
            }
         }
         catch (IOException e) {
@@ -25,6 +31,3 @@ class RunnableMessageHandler implements Runnable {
     }
     // We will have to call static methods from the Client class to parse what the server sends us
 }
-                // This means we just got a code back from the server
-                //if (serverOutput.length() == 1)
-                    //handleServerCode(Integer.parseInt(serverOutput), client);

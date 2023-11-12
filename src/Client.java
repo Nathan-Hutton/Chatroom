@@ -80,7 +80,7 @@ public class Client {
     }
     
     // Handle a code sent from the server (5-9)
-    public static void handleServerCode(int code, Client client) {
+    public static void handleServerCode(int code) {
         String userInput;
         String command;
 
@@ -102,10 +102,11 @@ public class Client {
     }
 
     public static String parseUserInput(String userInput, String username) {
+        userInput = userInput.stripTrailing();
+
         if (userInput.length() == 0)
             return "-1";
 
-        userInput = userInput.stripTrailing();
         if (userInput.equals("exit"))
             return "exit<" + username + ">";
         if (userInput.equals("ls"))
