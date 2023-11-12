@@ -25,3 +25,6 @@ class RunnableMessageHandler implements Runnable {
     }
     // We will have to call static methods from the Client class to parse what the server sends us
 }
+                // This means we just got a code back from the server
+                //if (serverOutput.length() == 1)
+                    //handleServerCode(Integer.parseInt(serverOutput), client);

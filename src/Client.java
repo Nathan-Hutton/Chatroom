@@ -13,7 +13,6 @@ public class Client {
     public static void main(String[] args) {
         Client client = new Client();
         String userInput;
-        String serverOutput;
         String command;
         try (
             Socket clientSocket = new Socket("localhost", PORT);
@@ -27,8 +26,8 @@ public class Client {
                 userInput = scanner.nextLine();
                 client.setUsername(userInput);
                 toServer.println("user<" + userInput + ">"); 
-                serverOutput = fromServer.readLine();
-                int returnCode = handleUsernameServerCode(Integer.parseInt(serverOutput));
+                String serverUsernameResponse = fromServer.readLine();
+                int returnCode = handleUsernameServerCode(Integer.parseInt(serverUsernameResponse));
 
                 if (returnCode == 1)
                     break;
@@ -37,7 +36,7 @@ public class Client {
             new Thread(new RunnableMessageHandler(fromServer)).start();
 
             // Handle chatting phase
-            while (clientSocket.isConnected()) {
+            while (true) {
                 userInput = scanner.nextLine();
                 command = parseUserInput(userInput, client.getUsername());
 
@@ -47,9 +46,8 @@ public class Client {
 
                 toServer.println(command);
 
-                // This means we just got a code back from the server
-                if (serverOutput.length() == 1)
-                    handleServerCode(Integer.parseInt(serverOutput), client);
+                if (userInput.stripTrailing().equals("exit"))
+                    break;
             }
         } catch (IOException ioe) {
             System.err.println(ioe);
