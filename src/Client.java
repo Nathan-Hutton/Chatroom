@@ -34,9 +34,10 @@ public class Client {
                     break;
             }
 
+            new Thread(new RunnableMessageHandler(fromServer)).start();
+
             // Handle chatting phase
             while (clientSocket.isConnected()) {
-                System.out.print("> ");
                 userInput = scanner.nextLine();
                 command = parseUserInput(userInput, client.getUsername());
 
@@ -45,23 +46,16 @@ public class Client {
                     continue;
 
                 toServer.println(command);
-                serverOutput = fromServer.readLine();
-                System.out.println(serverOutput);
 
-                // This means we've left the server
-                if (serverOutput == null) {
-                    break;
-                }
-
-                // TODO: Add colored text
                 // This means we just got a code back from the server
                 if (serverOutput.length() == 1)
                     handleServerCode(Integer.parseInt(serverOutput), client);
             }
-
-            System.out.println("You've left the server");
         } catch (IOException ioe) {
             System.err.println(ioe);
+        }
+        finally {
+            System.out.println("You've left the server");
         }
     }
 

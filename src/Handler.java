@@ -30,7 +30,6 @@ public class Handler {
 
             while (true) {
                 clientCommand = fromClient.readLine();
-                System.out.println(clientCommand);
 
                 // Likely means that the user left without an exit command
                 if (clientCommand == null)
@@ -53,8 +52,9 @@ public class Handler {
                 fromClient.close();
             if (toClient != null)
                 toClient.close();
-            if (userMap.keySet().contains(username))
+            if (userMap.keySet().contains(username)) {
                 userMap.remove(username);
+            }
             if (username != null) {
                 for (PrintWriter userWriter : userMap.values())
                     userWriter.println(username + " has left the server");
