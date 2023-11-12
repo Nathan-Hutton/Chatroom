@@ -48,9 +48,12 @@ public class Handler {
             }
 
             userMap.put(commandBody, getClientPrintWriter());
+
             // We'll need to make this a broadcast message at some point
             for (PrintWriter toClient : userMap.values())
                 toClient.println(commandBody + " has joined the server");            
+
+            getClientPrintWriter().println(4);
         }
     }
 
