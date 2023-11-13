@@ -19,7 +19,6 @@ import java.util.List;
 public class  Server
 {
 	public static final int DEFAULT_PORT = 5040;
-    private static ConcurrentHashMap<String, PrintWriter> userMap = new ConcurrentHashMap<>();
     
     // construct a thread pool for concurrency	
 	private static final Executor exec = Executors.newCachedThreadPool();
@@ -33,7 +32,7 @@ public class  Server
 			System.out.println("Server is listening on port " + DEFAULT_PORT);
 
 			while (true) {
-				Runnable task = new Connection(sock.accept(), userMap);
+				Runnable task = new Connection(sock.accept());
 				exec.execute(task);
 			}
 		}

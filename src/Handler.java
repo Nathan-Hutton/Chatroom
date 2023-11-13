@@ -19,12 +19,11 @@ public class Handler {
     private Socket clientSocket = null;
     private BufferedReader fromClient = null;
     private PrintWriter toClient = null;
-    private static ConcurrentHashMap<String, PrintWriter> userMap;
+    private static ConcurrentHashMap<String, PrintWriter> userMap = new ConcurrentHashMap<String, PrintWriter>();
 
-    public void process(Socket clientSocket, ConcurrentHashMap<String, PrintWriter> userMap) throws IOException {
+    public void process(Socket clientSocket) throws IOException {
         try  {
             this.clientSocket = clientSocket;
-            this.userMap = userMap;
             fromClient = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
             toClient = new PrintWriter(clientSocket.getOutputStream(), true);
             String clientCommand;
@@ -154,10 +153,12 @@ public class Handler {
     }
 
     public int processPrivateRequest(String command) {
-        String recipientUsername = command.split("<")[1].split(">")[0].split(",")[1];
+        String[] commandParts = command.split("<")[1].split(">")[0].split(",");
+        String senderUsername = commandParts[0];
+        String recipientUsername = commandParts[1];
+
         userMap.get(recipientUsername).println(command);
-        userMap.get("john").println(command);
-        //getClientPrintWriter().println(command);
+        userMap.get(senderUsername).println(command);
         return 1;
     }
 }

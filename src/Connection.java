@@ -13,11 +13,9 @@ public class Connection implements Runnable
 {
 	private Socket	client;
 	private Handler handler = new Handler();
-    private static ConcurrentHashMap<String, PrintWriter> userMap;
 	
-	public Connection(Socket clientSocket, ConcurrentHashMap<String, PrintWriter> userMap) {
+	public Connection(Socket clientSocket) {
         this.client = clientSocket;
-        this.userMap = userMap;
 	}
 
     /**
@@ -25,7 +23,7 @@ public class Connection implements Runnable
      */	
 	public void run() { 
 		try {
-			handler.process(client, userMap);
+			handler.process(client);
 		}
 		catch (java.io.IOException ioe) {
 			System.err.println(ioe);
