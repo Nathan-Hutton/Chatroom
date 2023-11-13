@@ -195,7 +195,7 @@ public class Client {
         if (header.equals("broadcast")) {
             String senderUsername = bodySegments[0];
             String time = bodySegments[1];
-            String message = bodySegments[2];
+            String message = serverOutput.substring(serverOutput.indexOf(time)+time.length()+1,serverOutput.length()-1);
             return "(" + senderUsername + " " + time + ") " + message;
         }
 
@@ -204,7 +204,7 @@ public class Client {
             String senderUsername = bodySegments[0];
             String recipientUsername = bodySegments[1];
             String time = bodySegments[2];
-            String message = bodySegments[3];
+            String message = serverOutput.substring(serverOutput.indexOf(time)+time.length()+1,serverOutput.length()-1);
             return "([private] " + senderUsername +" " + time + ") " + message;
         }
 
