@@ -18,11 +18,11 @@ class RunnableMessageHandler implements Runnable {
                 if (serverOutput == null)
                     break;
 
-                System.out.println(serverOutput);
-
                 // This means the server sent back a code
                 if (serverOutput.length() == 1)
                     Client.handleServerCode(Integer.parseInt(serverOutput));
+                else
+                    System.out.println(Client.parseServerOutput(serverOutput));
            }
         }
         catch (IOException e) {

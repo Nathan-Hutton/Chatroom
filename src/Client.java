@@ -8,12 +8,11 @@ import java.time.format.DateTimeFormatter;
 public class Client {
 
     public static final int PORT = 5040;
-    private String username;
 
     public static void main(String[] args) {
-        Client client = new Client();
         String userInput;
         String command;
+        String username;
         try (
             Socket clientSocket = new Socket("localhost", PORT);
             PrintWriter toServer = new PrintWriter(clientSocket.getOutputStream(), true);
@@ -24,7 +23,7 @@ public class Client {
             while (true) {
                 System.out.print("Enter your username: ");
                 userInput = scanner.nextLine();
-                client.setUsername(userInput);
+                username = userInput;
                 toServer.println("user<" + userInput + ">"); 
                 String serverUsernameResponse = fromServer.readLine();
                 int returnCode = handleUsernameServerCode(Integer.parseInt(serverUsernameResponse));
@@ -38,7 +37,7 @@ public class Client {
             // Handle chatting phase
             while (true) {
                 userInput = scanner.nextLine();
-                command = parseUserInput(userInput, client.getUsername());
+                command = parseUserInput(userInput, username);
 
                 // Means that we have some invalid input
                 if (command.equals("-1"))
@@ -134,9 +133,7 @@ public class Client {
 
         // Handle private messages
         if (betweenParenthesis.substring(0, 7).equals("private")) {
-            LocalTime time = LocalTime.now();
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
-            String formattedTime = time.format(formatter);
+            String formattedTime = LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm"));
             String recipient = betweenParenthesis.substring(7);
             String message = userInput.split("\\)", 2)[1];
 
@@ -158,11 +155,20 @@ public class Client {
         return "-1";
     }
 
-    public void setUsername(String username){
-        this.username = username;
-    }
+    public static String parseServerOutput(String serverOutput) {
+        String[] outputParts = serverOutput.split("<");
+        String header = outputParts[0];
+        String body = outputParts[1].split(">")[0];
 
-    public String getUsername() {
-        return username;
+        // Broadcasts
+        if (header.equals("broadcast")) {
+            String[] bodySegments = body.split(",");
+            String senderUsername = bodySegments[0];
+            String time = bodySegments[1];
+            String message = bodySegments[2];
+            return "(" + senderUsername + " " + time + ") " + message;
+        }
+
+        return "";
     }
 }

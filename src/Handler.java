@@ -12,6 +12,8 @@ import java.io.*;
 import java.net.*;
 import java.util.concurrent.*;
 import java.util.concurrent.TimeUnit;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 
 public class Handler {
     private Socket clientSocket = null;
@@ -56,8 +58,10 @@ public class Handler {
                 userMap.remove(username);
             }
             if (username != null) {
-                for (PrintWriter userWriter : userMap.values())
-                    userWriter.println(username + " has left the server");
+                for (PrintWriter userWriter : userMap.values()) {
+                    String formattedTime = LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm"));
+                    userWriter.println("broadcast<server," + formattedTime + "," + username + " left the server");
+                }
             }
         }
     }
@@ -70,6 +74,9 @@ public class Handler {
 
         if (commandHeader.equals("exit"))
             return processExitRequest(command);
+
+        if (commandHeader.equals("ls"))
+            return processUserlistRequest(command);
 
         return 1;
     }
@@ -109,8 +116,10 @@ public class Handler {
 
         // We'll need to make this a broadcast message at some point
         getClientPrintWriter().println(4);
-        for (PrintWriter toClient : userMap.values())
-            toClient.println(commandBody + " has joined the server");            
+        for (PrintWriter userWriter : userMap.values()) {
+            String formattedTime = LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm"));
+            userWriter.println("broadcast<server," + formattedTime + "," + commandBody + " joined the server");
+        }
 
         return 1;
     }
@@ -128,6 +137,19 @@ public class Handler {
             System.out.println(e);
         }
         return -1;
+    }
+
+    public int processUserlistRequest(String command) {
+        String[] commandParts = command.split("<");
+        String commandBody = commandParts[1].split(">")[0];
+        
+        String userlist = "";
+        for (String username : userMap.keySet())
+            userlist += ("," + username);
+
+        userlist = "userlist<" + userlist.substring(1) + ">";
+        getClientPrintWriter().println(userlist);
+        return 1;
     }
 
     public PrintWriter getClientPrintWriter() {
