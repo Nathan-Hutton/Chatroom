@@ -161,6 +161,13 @@ public class Client {
         String body = outputParts[1].split(">")[0];
         String[] bodySegments = body.split(",");
 
+        if (header.equals("userlist")) {
+            String formattedString = "";
+            for (String username : bodySegments)
+                formattedString += "\n" + username;
+            return formattedString.substring(1);
+        }
+
         // Broadcasts
         if (header.equals("broadcast")) {
             String senderUsername = bodySegments[0];
