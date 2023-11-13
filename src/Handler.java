@@ -123,6 +123,11 @@ public class Handler {
         String commandBody = commandParts[1].split(">")[0];
 
         userMap.remove(commandBody);
+        for (PrintWriter userWriter : userMap.values()) {
+            String formattedTime = LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm"));
+            userWriter.println("broadcast<server," + formattedTime + "," + commandBody + " left the server");
+        }
+
         try {
             toClient.close();
             fromClient.close();
