@@ -153,24 +153,47 @@ public class Handler {
     }
 
     public int processBroadcastRequest(String command) {
+        String commandString = command.substring(command.indexOf("<")+1, command.length()-1);
+        String[] commandParts = commandString.split(",");
+        String senderUsername = commandParts[0];
+        String time = commandParts[1];
+        String message = commandString.substring(commandString.indexOf(time) + time.length()+1);
+
+        // Check for invalid message length (0 or more than 1000)
+        if (message.length() == 0 || message.length() > 1000) {
+            userMap.get(senderUsername).println(5);
+            return 1;
+        }
+
+        // Check if a reserved character is used (angle brackets)
+        if (message.contains("<") || message.contains(">")) {
+            userMap.get(senderUsername).println(6);
+            return 1;
+        }
+
         for (PrintWriter userWriter : userMap.values())
             userWriter.println(command);
         return 1;
     }
 
     public int processPrivateRequest(String command) {
-        String[] commandParts = command.split("<")[1].split(">")[0].split(",");
+        String commandString = command.substring(command.indexOf("<")+1, command.length()-1);
+        String[] commandParts = commandString.split(",");
         String senderUsername = commandParts[0];
         String recipientUsername = commandParts[1];
-        String message;
-        try {
-            message = commandParts[3];
-        } catch (ArrayIndexOutOfBoundsException e) {
+        String time = commandParts[2];
+        String message = commandString.substring(commandString.indexOf(time) + time.length()+1);
+
+        // Check for invalid message length (0 or more than 1000)
+        if (message.length() == 0 || message.length() > 1000) {
             userMap.get(senderUsername).println(5);
             return 1;
         }
-        if (message.length() > 1000) {
-            userMap.get(senderUsername).println(5);
+
+        // Check if a reserved character is used (angle brackets)
+        if (message.contains("<") || message.contains(">")) {
+            userMap.get(senderUsername).println(6);
+            return 1;
         }
 
         userMap.get(recipientUsername).println(command);
