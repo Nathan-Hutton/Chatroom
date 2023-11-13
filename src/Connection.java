@@ -12,7 +12,7 @@ import java.util.concurrent.*;
 public class Connection implements Runnable
 {
 	private Socket	client;
-	private static Handler handler = new Handler();
+	private Handler handler = new Handler();
     private static ConcurrentHashMap<String, PrintWriter> userMap;
 	
 	public Connection(Socket clientSocket, ConcurrentHashMap<String, PrintWriter> userMap) {

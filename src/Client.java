@@ -114,12 +114,20 @@ public class Client {
         // Check if there aren't parenthesis
         if (userInput.charAt(0) != '(' || !userInput.contains(")")) {
             System.out.println("Invalid request, message must contain parenthesis");
+            String BRIGHT_CYAN = "\u001B[96m";
+            String BOLD = "\u001B[1m";
+            String RESET = "\u001B[0m";
+            System.out.print(BRIGHT_CYAN + BOLD + "> " + RESET);
             return "-1";
         }
 
         // User probably just has 2 parenthesis with nothing in them
         if (userInput.length() <= 2) {
             System.out.println("Invalid command");
+            String BRIGHT_CYAN = "\u001B[96m";
+            String BOLD = "\u001B[1m";
+            String RESET = "\u001B[0m";
+            System.out.print(BRIGHT_CYAN + BOLD + "> " + RESET);
             return "-1";
         }
 
@@ -128,6 +136,10 @@ public class Client {
         String betweenParenthesis = userInput.substring(1, userInput.indexOf(")"));
         if (!(betweenParenthesis.equals("broadcast") || (betweenParenthesis.substring(0, 7).equals("private") && betweenParenthesis.length() > 7))) {
             System.out.println("Invalid: '" + betweenParenthesis + "'");
+            String BRIGHT_CYAN = "\u001B[96m";
+            String BOLD = "\u001B[1m";
+            String RESET = "\u001B[0m";
+            System.out.print(BRIGHT_CYAN + BOLD + "> " + RESET);
             return "-1";
         }
 

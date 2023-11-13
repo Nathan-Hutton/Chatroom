@@ -38,5 +38,4 @@ class RunnableMessageHandler implements Runnable {
             return;
         }
     }
-    // We will have to call static methods from the Client class to parse what the server sends us
 }
