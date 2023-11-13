@@ -78,6 +78,9 @@ public class Handler {
         if (commandHeader.equals("ls"))
             return processUserlistRequest(command);
 
+        if (commandHeader.equals("broadcast"))
+            return processBroadcastRequest(command);
+
         return 1;
     }
 
@@ -149,6 +152,12 @@ public class Handler {
 
         userlist = "userlist<" + userlist.substring(1) + ">";
         getClientPrintWriter().println(userlist);
+        return 1;
+    }
+
+    public int processBroadcastRequest(String command) {
+        for (PrintWriter userWriter : userMap.values())
+            userWriter.println(command);
         return 1;
     }
 

@@ -148,7 +148,7 @@ public class Client {
             String formattedTime = time.format(formatter);
             String message = userInput.split("\\)", 2)[1];
 
-            String command = "<broadcast>("+username+","+formattedTime+","+message+")";
+            String command = "broadcast<"+username+","+formattedTime+","+message+">";
             return command;
         }
 
