@@ -1,13 +1,3 @@
-
-/**
- * Handler class containing the logic for echoing results back
- * to the client. 
- *
- * This conforms to RFC 862 for echo servers.
- *
- * @author Greg Gagne 
- */
-
 import java.io.*;
 import java.net.*;
 import java.util.concurrent.*;
@@ -19,6 +9,7 @@ public class Handler {
     private Socket clientSocket = null;
     private BufferedReader fromClient = null;
     private PrintWriter toClient = null;
+    private String username = null;
     private static ConcurrentHashMap<String, PrintWriter> userMap = new ConcurrentHashMap<String, PrintWriter>();
 
     public void process(Socket clientSocket) throws IOException {
@@ -46,6 +37,15 @@ public class Handler {
             //System.out.println(e);
             e.printStackTrace();
         } finally {
+            // Redundancy in case the user ctrl+c
+            if (userMap.keySet().contains(this.username)) {
+                userMap.remove(this.username);
+                for (PrintWriter userWriter : userMap.values()) {
+                    String formattedTime = LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm"));
+                    userWriter.println("broadcast<server," + formattedTime + "," + this.username + " left the server");
+                }
+            }
+
             if (clientSocket != null)
                 clientSocket.close();
             if (fromClient != null)
@@ -107,6 +107,7 @@ public class Handler {
 
         // Success
         userMap.put(commandBody, toClient);
+        this.username = commandBody;
 
         // We'll need to make this a broadcast message at some point
         userMap.get(commandBody).println(4);
@@ -122,10 +123,10 @@ public class Handler {
         String[] commandParts = command.split("<");
         String commandBody = commandParts[1].split(">")[0];
 
-        userMap.remove(commandBody);
+        userMap.remove(this.username);
         for (PrintWriter userWriter : userMap.values()) {
             String formattedTime = LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm"));
-            userWriter.println("broadcast<server," + formattedTime + "," + commandBody + " left the server");
+            userWriter.println("broadcast<server," + formattedTime + "," + this.username + " left the server");
         }
 
         try {
