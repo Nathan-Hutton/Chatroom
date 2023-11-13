@@ -77,15 +77,13 @@ public class Handler {
     }
 
     public int processNewUserRequest(String command) {
-        String[] commandParts = command.split("<");
-
         // Means that we have an empty command body
-        if (commandParts[1].equals(">")) {
+        if (command.equals("user<>")) {
             toClient.println(3);
             return 1;
         }
 
-        String commandBody = commandParts[1].split(">")[0];
+        String commandBody = command.substring(command.indexOf("<")+1,command.length()-1);
 
         // Username taken
         if (userMap.keySet().contains(commandBody) || commandBody.equals("server")) {
@@ -99,7 +97,7 @@ public class Handler {
             return 1;
         }
 
-        // Length of username is invalid
+        // Length of username is invalid (checking for < 1 is redundant)
         if (commandBody.length() < 1 || commandBody.length() > 20) {
             toClient.println(3);
             return 1;
