@@ -6,14 +6,26 @@ import java.time.format.DateTimeFormatter;
 
 public class Client {
 
-    public static final int PORT = 5040;
+    // Format:
+    // For broadcasts: (broadcast)hello
+    // For private messages: (private recipient_username)hhello
+    // For listing the users: ls
+    // For leaving: exit or ctrl+c
+
+    public static final int SERVERPORT = 5040;
 
     public static void main(String[] args) {
         String userInput;
         String command;
         String username;
+
+        if (args.length != 1) {
+            System.out.println("You need to give an IP address");
+            System.exit(0);
+        }
+
         try (
-            Socket clientSocket = new Socket("localhost", PORT);
+            Socket clientSocket = new Socket(args[0], SERVERPORT);
             PrintWriter toServer = new PrintWriter(clientSocket.getOutputStream(), true);
             BufferedReader fromServer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
             Scanner scanner = new Scanner(System.in); 
