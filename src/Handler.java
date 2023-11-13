@@ -162,6 +162,16 @@ public class Handler {
         String[] commandParts = command.split("<")[1].split(">")[0].split(",");
         String senderUsername = commandParts[0];
         String recipientUsername = commandParts[1];
+        String message;
+        try {
+            message = commandParts[3];
+        } catch (ArrayIndexOutOfBoundsException e) {
+            userMap.get(senderUsername).println(5);
+            return 1;
+        }
+        if (message.length() > 1000) {
+            userMap.get(senderUsername).println(5);
+        }
 
         userMap.get(recipientUsername).println(command);
         userMap.get(senderUsername).println(command);
