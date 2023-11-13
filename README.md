@@ -1,6 +1,8 @@
 # Chatroom
 
-cd into the src folder
+cd into the src folder then the client folder
+Compile with: javac *.java 
+cd back into src then into the server folder
 Compile with: javac *.java 
 
 To make a broadcast message to everyone: (broadcast)hello
