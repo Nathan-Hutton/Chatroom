@@ -173,6 +173,8 @@ public class Handler {
 
         for (PrintWriter userWriter : userMap.values())
             userWriter.println(command);
+
+        userMap.get(senderUsername).println(8);
         return 1;
     }
 
@@ -196,8 +198,15 @@ public class Handler {
             return 1;
         }
 
+        // Check that the recipient exists
+        if (!userMap.keySet().contains(recipientUsername)) {
+            userMap.get(senderUsername).println(9);
+            return 1;
+        }
+
         userMap.get(recipientUsername).println(command);
         userMap.get(senderUsername).println(command);
+        userMap.get(senderUsername).println(7);
         return 1;
     }
 }
