@@ -131,16 +131,6 @@ public class Client {
             return "-1";
         }
 
-        // Handle private messages
-        if (betweenParenthesis.substring(0, 7).equals("private")) {
-            String formattedTime = LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm"));
-            String recipient = betweenParenthesis.substring(7);
-            String message = userInput.split("\\)", 2)[1];
-
-            String command = "<private>("+username+","+recipient+","+formattedTime+","+message+")";
-            return command;
-        }
-
         // Handle broadcast messages
         if (betweenParenthesis.equals("broadcast")) {
             LocalTime time = LocalTime.now();
@@ -152,6 +142,16 @@ public class Client {
             return command;
         }
 
+        // Handle private messages
+        if (betweenParenthesis.substring(0, 7).equals("private")) {
+            String formattedTime = LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm"));
+            String recipient = betweenParenthesis.split(" ")[1];
+            String message = userInput.split("\\)", 2)[1];
+
+            String command = "private<"+username+","+recipient+","+formattedTime+","+message+">";
+            return command;
+        }
+
         return "-1";
     }
 
@@ -159,14 +159,23 @@ public class Client {
         String[] outputParts = serverOutput.split("<");
         String header = outputParts[0];
         String body = outputParts[1].split(">")[0];
+        String[] bodySegments = body.split(",");
 
         // Broadcasts
         if (header.equals("broadcast")) {
-            String[] bodySegments = body.split(",");
             String senderUsername = bodySegments[0];
             String time = bodySegments[1];
             String message = bodySegments[2];
             return "(" + senderUsername + " " + time + ") " + message;
+        }
+
+        // Private Messages
+        if (header.equals("private")) {
+            String senderUsername = bodySegments[0];
+            String recipientUsername = bodySegments[1];
+            String time = bodySegments[2];
+            String message = bodySegments[3];
+            return "([private] " + senderUsername +" " + time + ") " + message;
         }
 
         return "";

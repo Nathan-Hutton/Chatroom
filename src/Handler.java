@@ -81,6 +81,9 @@ public class Handler {
         if (commandHeader.equals("broadcast"))
             return processBroadcastRequest(command);
 
+        if (commandHeader.equals("private"))
+            return processPrivateRequest(command);
+
         return 1;
     }
 
@@ -158,6 +161,12 @@ public class Handler {
     public int processBroadcastRequest(String command) {
         for (PrintWriter userWriter : userMap.values())
             userWriter.println(command);
+        return 1;
+    }
+
+    public int processPrivateRequest(String command) {
+        String recipientUsername = command.split("<")[1].split(">")[0].split(",")[1];
+        userMap.get(recipientUsername).println(command);
         return 1;
     }
 

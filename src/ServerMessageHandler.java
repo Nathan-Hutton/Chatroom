@@ -11,6 +11,9 @@ class RunnableMessageHandler implements Runnable {
     @Override
     public void run() {
         String serverOutput;
+        String BRIGHT_CYAN = "\u001B[96m";
+        String BOLD = "\u001B[1m";
+        String RESET = "\u001B[0m";
         try {
             while (true) {
                 serverOutput = fromServer.readLine();
@@ -18,11 +21,17 @@ class RunnableMessageHandler implements Runnable {
                 if (serverOutput == null)
                     break;
 
-                // This means the server sent back a code
+                // This is deleting the "> " before the user's input
+                System.out.print("\b\b");
+
                 if (serverOutput.length() == 1)
+                    // This means the server sent back a code
                     Client.handleServerCode(Integer.parseInt(serverOutput));
                 else
                     System.out.println(Client.parseServerOutput(serverOutput));
+
+                // This is putting the "> " back
+                System.out.print(BRIGHT_CYAN + BOLD + "> " + RESET);
            }
         }
         catch (IOException e) {
