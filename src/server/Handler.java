@@ -111,7 +111,7 @@ public class Handler {
         userMap.get(commandBody).println(4);
         for (PrintWriter userWriter : userMap.values()) {
             String formattedTime = LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm"));
-            userWriter.println("broadcast<server," + formattedTime + "," + commandBody + " joined the server");
+            userWriter.println("broadcast<server," + formattedTime + "," + commandBody + " joined the server>");
         }
 
         return 1;
@@ -124,7 +124,7 @@ public class Handler {
         userMap.remove(this.username);
         for (PrintWriter userWriter : userMap.values()) {
             String formattedTime = LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm"));
-            userWriter.println("broadcast<server," + formattedTime + "," + this.username + " left the server");
+            userWriter.println("broadcast<server," + formattedTime + "," + this.username + " left the server>");
         }
 
         try {
